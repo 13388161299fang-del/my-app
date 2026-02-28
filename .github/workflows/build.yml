@@ -1,41 +1,38 @@
 name: Build macOS App
 
-# 触发条件：推送到 main 或 master 分支，或手动触发
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: macos-latest          # 使用 macOS 最新环境
+    runs-on: macos-latest
 
     steps:
-      - name: 检出代码
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: 设置 Python 版本
-        uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'    # 可改为 3.10、3.11 等
+          python-version: '3.9'
 
-      - name: 安装依赖
+      - name: Install dependencies
         run: |
           pip install --upgrade pip
-          # 如果有 requirements.txt，去掉下一行注释
           pip install -r requirements.txt
           pip install pyinstaller
 
-      - name: 使用 PyInstaller 打包
+      - name: List files (debug)
+        run: ls -la
+
+      - name: Build with PyInstaller
         run: |
-          # 重要：将 your_script.py 替换为你的主程序文件名
           pyinstaller --onefile 乐达.py
 
-      - name: 上传构建产物
-        uses: actions/upload-artifact@v3
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: macOS-App
           path: dist/
-
